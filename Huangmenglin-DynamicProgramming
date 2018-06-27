@@ -1,0 +1,138 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <memory.h>
+#include <windows.h>
+
+
+int m=0;
+int n=0;
+int g=0;//gap
+void gotoxy(int x,int y);
+int getmin(int a,int b,int c);	
+void getcost(int ** cost,char * X,char * Y);
+void align(int ** cost,char * X,char * Y,int i,int j);
+
+int main()
+{
+	char * X;
+	char * Y;
+	int ** cost; 
+
+	printf("please input the length of sequence X\n");
+	scanf("%d",&m);
+	
+	X = (char *)malloc(sizeof(char)*m);
+	for(int i=0;i<m;i++){
+		getchar();
+		printf("X[%d]: ",i);
+		scanf("%c",&X[i]);//输入以回车结束 
+	}
+	printf("\n");
+	
+	printf("please input the length of sequence Y\n");
+	scanf("%d",&n);
+	Y = (char *)malloc(sizeof(char)*n);
+	for(int i=0;i<n;i++){
+		getchar();
+		printf("Y[%d]: ",i);
+		scanf("%c",&Y[i]);
+	}	
+	printf("\n");
+	
+	cost=(int**)malloc(sizeof(int)*(m+1));//排头指针 
+	for(int i=0;i<=m;i++){//纵向x，横向y
+		cost[i]= (int *)malloc(sizeof(int)*(n+1));
+	}
+
+	
+	getcost(cost,X,Y);
+	system("cls");
+	align(cost,X,Y,0,0);
+	return 0;
+}
+
+/*void gotoxy(int x,int y){
+	COORD pos;
+	pos.X=x;
+	pos.Y=y;
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE),pos);
+}*/
+
+void align(int ** cost,char * X,char * Y,int i,int j){
+	if (i==m){
+		for(int z=0;z<n-i-g;z++){
+			printf("-");
+			printf("%c",Y[j]);
+			j++;
+			printf("\t");
+		}
+		return ;
+	}
+	if(j==n){
+		for(int z=0;z<m-j-g;z++){
+		
+			printf("%c",X[i]);
+			i++;
+			printf("-");
+			printf("\t");
+		}
+		return ;
+	}
+			if(cost[i][j]-2==cost[i][j+1]){//向右 
+				printf("-");
+				printf("%c",Y[j]);
+				printf("\t");
+				j++;
+				g++;
+			}
+			else if(cost[i][j]-1==cost[i+1][j+1]&&X[i]!=Y[j]){
+				printf("%c",X[i]);
+				printf("%c",Y[j]);
+				printf("\t");
+				i++;
+				j++;
+			}
+			else if(cost[i][j]==cost[i+1][j+1]&&X[i]==Y[j]){
+				printf("%c",X[i]);
+				printf("%c",Y[j]);
+				printf("\t");
+				i++;
+				j++;
+			}
+			else if(cost[i][j]-2==cost[i+1][j]){//向下
+			 	printf("%c",X[i]);
+				printf("-");
+				printf("\t");
+				i++;
+				g++;
+			}
+		align(cost,X,Y,i,j);
+}
+void getcost(int ** cost,char * X,char * Y){
+	for(int i=m;i>=0;i--){
+		for(int j=n;j>=0;j--){
+			if(i==m){
+				cost[i][j] = 2*(n-j);
+				continue;
+			}
+			if(j==n){
+				cost[i][j] = 2*(m-i);
+				continue;
+			}
+			cost[i][j] = X[i]==Y[j]?cost[i+1][j+1]:cost[i+1][j+1]+1;
+			cost[i][j] = getmin(cost[i+1][j]+2,cost[i][j],cost[i][j+1]+2);
+		}
+	}
+}
+
+int getmin(int a,int b,int c){
+	int min =a;
+	if(min>b){
+		min=b;
+	}
+	if(min>c){
+		min=c;
+	}
+	return min;
+}
+
