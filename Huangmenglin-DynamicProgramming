@@ -2,11 +2,14 @@
 #include <stdlib.h>
 #include <memory.h>
 #include <windows.h>
+#include <time.h>
 
 
 int m=0;
 int n=0;
 int g=0;//gap
+
+char getrandom();
 void gotoxy(int x,int y);
 int getmin(int a,int b,int c);	
 void getcost(int ** cost,char * X,char * Y);
@@ -17,28 +20,47 @@ int main()
 	char * X;
 	char * Y;
 	int ** cost; 
-
+	clock_t start,finish;
+	
+	srand(time(NULL));
 	printf("please input the length of sequence X\n");
 	scanf("%d",&m);
 	
 	X = (char *)malloc(sizeof(char)*m);
-	for(int i=0;i<m;i++){
-		getchar();
-		printf("X[%d]: ",i);
-		scanf("%c",&X[i]);//输入以回车结束 
+	if(m<=10){//10以内自己输入 
+		
+		for(int i=0;i<m;i++){
+			getchar();
+			printf("X[%d]: ",i);
+			scanf("%c",&X[i]);//输入以回车结束 
+		}
 	}
+	else{
+		for(int i=0;i<m;i++){
+			X[i]=getrandom();
+		}
+	} 
 	printf("\n");
 	
 	printf("please input the length of sequence Y\n");
 	scanf("%d",&n);
 	Y = (char *)malloc(sizeof(char)*n);
-	for(int i=0;i<n;i++){
-		getchar();
-		printf("Y[%d]: ",i);
-		scanf("%c",&Y[i]);
-	}	
+	if(n<=10){//10以内自己输入 
+		for(int i=0;i<n;i++){
+			getchar();
+			printf("Y[%d]: ",i);
+			scanf("%c",&Y[i]);
+		}	
+	}
+	else{
+		for(int i=0;i<n;i++){
+			Y[i]=getrandom();
+		}
+	} 
+
 	printf("\n");
 	
+	start = clock();
 	cost=(int**)malloc(sizeof(int)*(m+1));//排头指针 
 	for(int i=0;i<=m;i++){//纵向x，横向y
 		cost[i]= (int *)malloc(sizeof(int)*(n+1));
@@ -46,8 +68,11 @@ int main()
 
 	
 	getcost(cost,X,Y);
-	system("cls");
+	//system("cls");
 	align(cost,X,Y,0,0);
+	finish = clock();
+	double time = (double)(finish-start)/CLOCKS_PER_SEC;
+	printf("\n程序运行时间：%f ms",time);
 	return 0;
 }
 
@@ -135,4 +160,21 @@ int getmin(int a,int b,int c){
 	}
 	return min;
 }
+
+char getrandom(){
+	int a = rand()%4;
+	if(a==0){
+		return 'A';
+	}
+	else if(a==1){
+		return 'T';
+	}
+	else if(a==2){
+		return 'C';
+	}
+	else{
+		return 'G';
+	}
+}
+
 
